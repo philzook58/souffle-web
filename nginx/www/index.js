@@ -56,6 +56,20 @@ function clearStatus() {
 
 function do_post() {
 	var xhr = new XMLHttpRequest();
+	resp_stdout.value = "";
+	resp_stderr.value = "";
+	var myParams = {
+		'print': function(text) { resp_stdout.value += text + "\n"; },
+		'printErr': function(text) {resp_stderr.value += text + "\n";},
+		"noInitialRun": false,
+		"noExitRuntime": false,
+		"arguments" : ["--no-preprocessor", "-D", "-", "myfile.dl"], 
+		"preRun" : function(){
+		  var code = editor.getValue();
+		  myParams.FS.writeFile('myfile.dl', code);
+		  }
+	 }; 
+	 SOUFFLE(myParams);
 
 	xhr.onreadystatechange = function() {
 		if (this.readyState != 4) {
@@ -98,10 +112,10 @@ function do_post() {
 
 	showStatus("running...");
 
-	xhr.responseType = "json";
-	xhr.open("POST", "api/run", true);
-	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.send(JSON.stringify(body));
+	//xhr.responseType = "json";
+	//xhr.open("POST", "api/run", true);
+	//xhr.setRequestHeader("Content-Type", "application/json");
+	//xhr.send(JSON.stringify(body));
 }
 
 editor.addKeyMap({
